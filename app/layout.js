@@ -10,9 +10,9 @@ const poppins = Poppins({
 });
 
 export const metadata = {
-  title: "RasaKu — Pesan Makanan Online",
+  title: "Alamanda — Rumah Makan Khas Sunda",
   description:
-    "Pesan makanan favoritmu dengan mudah dan cepat di RasaKu. Segar, lezat, dan diantar tepat waktu.",
+    "Nikmati hidangan lezat dari Rumah Makan Alamanda, restoran khas Sunda yang menyajikan makanan segar dan berkualitas tinggi. Pesan sekarang dan rasakan pengalaman kuliner yang tak terlupakan!",
 };
 
 export default function RootLayout({ children }) {
