@@ -71,7 +71,7 @@ export default function HomePage() {
         <section id="tentang" className="bg-primary-50/50 py-16">
           <div className="mx-auto grid max-w-7xl grid-cols-1 items-center gap-10 px-4 sm:px-6 md:grid-cols-2 lg:px-8">
             <img
-              src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?q=80&w=800&auto=format&fit=crop"
+              src="https://i.pinimg.com/736x/d7/7e/32/d77e32e896498002aba9965f2bb4591f.jpg"
               alt="Dapur Rumah Makan Alamanda"
               className="h-72 w-full rounded-3xl object-cover shadow-soft"
             />

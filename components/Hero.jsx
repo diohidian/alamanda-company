@@ -56,7 +56,7 @@ export default function Hero() {
         <div className="relative mx-auto h-64 w-64 sm:h-80 sm:w-80 md:ml-auto md:h-96 md:w-96">
           <div className="absolute inset-0 rounded-full bg-primary/10 blur-2xl" />
           <img
-            src="https://sultantv.co/wp-content/uploads/2024/01/Ikan-Nila-Bakar.jpg"
+            src="https://i.pinimg.com/736x/50/01/fd/5001fd0732a4e810b2809b99336b956d.jpg"
             alt="Ilustrasi makanan"
             className="relative h-full w-full rounded-full object-cover shadow-softHover ring-8 ring-white"
           />
