@@ -1,10 +1,7 @@
 import Link from "next/link";
 
 const socials = [
-  { name: "Instagram", href: "#", icon: "📸" },
-  { name: "Facebook", href: "#", icon: "📘" },
-  { name: "TikTok", href: "#", icon: "🎵" },
-  { name: "WhatsApp", href: "#", icon: "💬" },
+  { name: "Instagram", href: "https://www.instagram.com/rm.alamanda/", icon: "https://i.pinimg.com/1200x/12/d7/52/12d752c2919daaf807d8b71f3dbed1a0.jpg" },
 ];
 
 export default function Footer() {
@@ -15,9 +12,7 @@ export default function Footer() {
           {/* Brand */}
           <div>
             <div className="flex items-center gap-2">
-              <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-lg font-bold text-white">
-                🍔
-              </span>
+              <img src="https://i.pinimg.com/736x/b5/62/0d/b5620de934f06a5b4449b9ac7db5c7f3.jpg" className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-lg font-bold text-white shadow-soft" alt="Logo Rumah Makan Alamanda" />
               <span className="text-lg font-bold text-gray-900">
                 Rumah Makan<span className="text-primary"> Alamanda</span>
               </span>
@@ -64,7 +59,7 @@ export default function Footer() {
                   aria-label={s.name}
                   className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-base shadow-soft transition-all duration-200 hover:-translate-y-1 hover:bg-primary hover:text-white"
                 >
-                  {s.icon}
+                  <img src={s.icon} alt={s.name} className="h-full w-full object-cover" />
                 </Link>
               ))}
             </div>

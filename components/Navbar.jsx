@@ -21,9 +21,7 @@ export default function Navbar() {
       <nav className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2">
-          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-lg font-bold text-white shadow-soft">
-            🍔
-          </span>
+          <img src="https://i.pinimg.com/736x/b5/62/0d/b5620de934f06a5b4449b9ac7db5c7f3.jpg" className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-lg font-bold text-white shadow-soft" alt="Logo Rumah Makan Alamanda" />
           <span className="text-lg font-bold tracking-tight text-gray-900">
             Rumah Makan<span className="text-primary"> Alamanda</span>
           </span>
