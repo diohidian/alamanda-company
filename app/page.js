@@ -1,21 +1,38 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
-import CategoryTabs from "@/components/CategoryTabs";
 import MenuCard from "@/components/MenuCard";
 import Footer from "@/components/Footer";
-import { categories, menuItems } from "@/data/menuData";
+import { getMenus } from "@/api/api";
 
 export default function HomePage() {
-  const [activeCategory, setActiveCategory] = useState("semua");
+  const [menuData, setMenuData] = useState([]);
+  const [activeCategory] = useState("all");
 
-  const filteredItems =
-    activeCategory === "semua"
-      ? menuItems.slice(0, 8)
-      : menuItems.filter((item) => item.category === activeCategory).slice(0, 8);
+  useEffect(() => {
+    const fetchMenus = async () => {
+      try {
+        const menus = await getMenus();
+        setMenuData(menus);
+      } catch (error) {
+        console.error("Error fetching menus:", error);
+      }
+    };
+
+    fetchMenus();
+  }, []);
+
+  const filteredItems = useMemo(() => {
+    const source =
+      activeCategory === "all"
+        ? menuData
+        : menuData.filter((item) => item.category === activeCategory);
+
+    return source.slice(0, 8);
+  }, [activeCategory, menuData]);
 
   return (
     <>
@@ -33,9 +50,9 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div className="mt-8">
+          {/* <div className="mt-8">
             <CategoryTabs active={activeCategory} onChange={setActiveCategory} />
-          </div>
+          </div> */}
 
           <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {filteredItems.map((item) => (

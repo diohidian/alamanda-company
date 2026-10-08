@@ -1,26 +1,48 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import CategoryTabs from "@/components/CategoryTabs";
 import MenuCard from "@/components/MenuCard";
-import { categories, menuItems } from "@/data/menuData";
+import { getMenus } from "@/api/api";
 
 export default function MenuPage() {
-  const [activeCategory, setActiveCategory] = useState("semua");
   const [search, setSearch] = useState("");
+  const [menuData, setMenuData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState("");
+
+  useEffect(() => {
+    let isCurrent = true;
+
+    const fetchMenus = async () => {
+      try {
+        const menus = await getMenus();
+        if (isCurrent) setMenuData(menus);
+      } catch (error) {
+        console.error("Error fetching menus:", error);
+        if (isCurrent) {
+          setLoadError(error.message || "Terjadi kesalahan saat memuat menu.");
+        }
+      } finally {
+        if (isCurrent) setIsLoading(false);
+      }
+    };
+
+    fetchMenus();
+    return () => {
+      isCurrent = false;
+    };
+  }, []);
 
   const filteredItems = useMemo(() => {
-    return menuItems.filter((item) => {
-      const matchCategory =
-        activeCategory === "semua" || item.category === activeCategory;
+    return menuData.filter((item) => {
       const matchSearch = item.name
         .toLowerCase()
         .includes(search.toLowerCase());
-      return matchCategory && matchSearch;
+      return matchSearch;
     });
-  }, [activeCategory, search]);
+  }, [menuData, search]);
 
   return (
     <>
@@ -58,11 +80,15 @@ export default function MenuPage() {
           </div>
         </div>
 
-        <div className="mt-8">
-          <CategoryTabs active={activeCategory} onChange={setActiveCategory} />
-        </div>
-
-        {filteredItems.length > 0 ? (
+        {isLoading ? (
+          <p className="mt-16 text-center text-sm text-gray-500">
+            Memuat menu...
+          </p>
+        ) : loadError ? (
+          <p className="mt-16 text-center text-sm text-red-600">
+            Gagal memuat menu: {loadError}
+          </p>
+        ) : filteredItems.length > 0 ? (
           <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {filteredItems.map((item) => (
               <MenuCard key={item.id} item={item} />

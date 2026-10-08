@@ -9,22 +9,22 @@ export const categories = [
 export const menuItems = [
   {
     id: 1,
-    name: "Nasi Goreng Spesial",
+    name: "Gurame Bakar",
     category: "makanan-utama",
-    price: 28000,
+    price: "130.000",
     image:
-      "https://images.unsplash.com/photo-1512058564366-18510be2db19?q=80&w=600&auto=format&fit=crop",
-    desc: "Nasi goreng dengan telur, ayam suwir, dan acar segar.",
+      "https://sultantv.co/wp-content/uploads/2024/01/Ikan-Nila-Bakar.jpg",
+    desc: "1 ekor dengan berat 1 KG gurame bakar cukup untuk 4 - 5 orang",
     popular: true,
   },
   {
     id: 2,
-    name: "Ayam Bakar Madu",
+    name: "Gurame Goreng",
     category: "makanan-utama",
-    price: 32000,
+    price: "130.000",
     image:
-      "https://images.unsplash.com/photo-1598515213692-5f252f342927?q=80&w=600&auto=format&fit=crop",
-    desc: "Ayam bakar bumbu madu dengan sambal khas rumahan.",
+      "https://i.ytimg.com/vi/GHuuI02WqXM/maxresdefault.jpg",
+    desc: "1 ekor dengan berat 1 KG gurame goreng cukup untuk 4 - 5 orang",
     popular: true,
   },
   {

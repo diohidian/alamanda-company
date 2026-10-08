@@ -13,8 +13,8 @@ function formatRupiah(num) {
 
 const paymentMethods = [
   { id: "tunai", label: "Tunai / Bayar di Tempat", icon: "💵" },
-  { id: "qris", label: "QRIS", icon: "📱" },
-  { id: "transfer", label: "Transfer Bank", icon: "🏦" },
+  // { id: "qris", label: "QRIS", icon: "📱" },
+  // { id: "transfer", label: "Transfer Bank", icon: "🏦" },
 ];
 
 export default function CheckoutPage() {
