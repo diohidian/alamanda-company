@@ -9,7 +9,7 @@ const menuLinks = [
   { href: "/menu", label: "Menu" },
   { href: "/#promo", label: "Promo" },
   { href: "/#tentang", label: "Tentang" },
-  { href: "/#kontak", label: "Kontak" },
+  { href: "https://wa.me/6282240949422", label: "Kontak" },
 ];
 
 export default function Navbar() {
