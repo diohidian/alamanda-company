@@ -1,5 +1,6 @@
 "use client";
 
+import { getCookie } from "@/utils/cookies";
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 
 const CartContext = createContext(null);
@@ -7,6 +8,25 @@ const CartContext = createContext(null);
 export function CartProvider({ children }) {
   const [items, setItems] = useState([]);
   const [hydrated, setHydrated] = useState(false);
+  const [isLogin, setIsLogin] = useState(false);
+  const [userData, setUserData] = useState({});
+
+  useEffect(() => {
+    const userDataCookie = getCookie("userData");
+    if (!userDataCookie) return;
+
+    try {
+      const parsedUserData = JSON.parse(userDataCookie);
+      if (!parsedUserData || typeof parsedUserData !== "object") {
+        throw new TypeError("Data user pada cookie bukan objek yang valid.");
+      }
+
+      setUserData(parsedUserData);
+      setIsLogin(true);
+    } catch (error) {
+      console.error("Gagal membaca data user dari cookie:", error);
+    }
+  }, []);
 
   // Load cart dari localStorage saat pertama kali render di client
   useEffect(() => {
@@ -31,7 +51,7 @@ export function CartProvider({ children }) {
       const existing = prev.find((i) => i.id === product.id);
       if (existing) {
         return prev.map((i) =>
-          i.id === product.id ? { ...i, qty: i.qty + 1 } : i
+          i.id === product.id ? { ...i, qty: i.qty + 1 } : i,
         );
       }
       return [...prev, { ...product, qty: 1 }];
@@ -52,14 +72,24 @@ export function CartProvider({ children }) {
 
   const clearCart = () => setItems([]);
 
+  const loginUser = (user) => {
+    setUserData(user);
+    setIsLogin(true);
+  };
+
+  const logoutUser = () => {
+    setUserData({});
+    setIsLogin(false);
+  };
+
   const totalItems = useMemo(
     () => items.reduce((sum, i) => sum + i.qty, 0),
-    [items]
+    [items],
   );
 
   const totalPrice = useMemo(
     () => items.reduce((sum, i) => sum + i.qty * i.price, 0),
-    [items]
+    [items],
   );
 
   const value = {
@@ -70,6 +100,10 @@ export function CartProvider({ children }) {
     clearCart,
     totalItems,
     totalPrice,
+    isLogin,
+    userData,
+    loginUser,
+    logoutUser,
   };
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;

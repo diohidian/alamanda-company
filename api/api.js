@@ -38,8 +38,8 @@ export const getMenus = async () => {
 export const createOrder = async (orderData, orderItems) => {
   try {
     const response = await api.post("api/v1/orders/create", {
-      ...orderData,
-      items: orderItems,
+      orderData,
+      orderItems,
     });
     return response.data;
   } catch (error) {
@@ -47,3 +47,29 @@ export const createOrder = async (orderData, orderItems) => {
     throw error;
   }
 };
+
+export const register = async ({
+  name, email, password
+}) => {
+  try{
+    const response = await api.post("users/v1/register", {
+      name,
+      email,
+      password,
+    })
+    return response.data;
+  } catch (error) {
+    console.error("Error registering user:", error);
+    throw error;
+  }
+}
+
+export const loginAuth = async ({email, password}) => {
+  try {
+    const response = await api.post("users/v1/loginAuth", {email, password})
+    return response.data
+  } catch (error) {
+    console.error("Error registering user:", error);
+    throw error;
+  }
+}

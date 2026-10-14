@@ -1,52 +1,88 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useCart } from "@/context/CartContext";
+import { createOrder } from "@/api/api";
 
 function formatRupiah(num) {
   return "Rp" + num.toLocaleString("id-ID");
 }
 
 const paymentMethods = [
-  { id: "tunai", label: "Tunai / Bayar di Tempat", icon: "💵" },
+  { id: "tunai", label: "Tunai / Bayar di Tempat", icon: "💵", value: "cash"},
   // { id: "qris", label: "QRIS", icon: "📱" },
   // { id: "transfer", label: "Transfer Bank", icon: "🏦" },
 ];
 
 export default function CheckoutPage() {
-  const { items, totalPrice, totalItems, clearCart } = useCart();
+  const { items, totalPrice, totalItems, clearCart, userData } = useCart();
   const router = useRouter();
 
   const [form, setForm] = useState({
-    nama: "",
-    tipe: "dine-in",
-    lokasi: "",
-    catatan: "",
-    pembayaran: "tunai",
+    user_id: "",
+    surename: "",
+    ordertype: "",
+    table: "",
+    notes: "",
+    methodpayment: "",
   });
+
+  const [itemorders, setItemOrders] = useState([]);
+
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (userData?.id == null) return;
+    setForm((currentForm) => ({ ...currentForm, user_id: userData.id }));
+  }, [userData]);
 
   const ongkir = items.length > 0 ? 5000 : 0;
   const grandTotal = totalPrice + ongkir;
 
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
+  useEffect(() => {
+    setItemOrders(
+      items.map((item) => ({
+        menu_id: item.id,
+        unit_price: item.price,
+        subtotal: item.price * item.qty,
+      })),
+    );
+  }, [items]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!form.nama.trim() || !form.lokasi.trim()) {
-      setError("Mohon lengkapi nama dan alamat/nomor meja terlebih dahulu.");
+    if (!form.surename.trim() || !form.ordertype.trim()) {
+      setError("Mohon lengkapi nama dan tipe pesanan terlebih dahulu.");
       return;
     }
+
+    if (itemorders.length === 0) {
+      setError("Keranjang kosong. Tambahkan menu sebelum membuat pesanan.");
+      return;
+    }
+
+    if (form.user_id === "") {
+      setError("ID pengguna tidak ditemukan. Silakan login kembali.");
+      return;
+    }
+
     setError("");
-    setSubmitted(true);
-    clearCart();
+    setIsSubmitting(true);
+    try {
+      await createOrder({ ...form }, itemorders);
+      setSubmitted(true);
+      clearCart();
+    } catch {
+      setError("Pesanan gagal dibuat. Silakan coba lagi.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (items.length === 0 && !submitted) {
@@ -76,7 +112,7 @@ export default function CheckoutPage() {
           <span className="text-6xl">🎉</span>
           <h1 className="section-title mt-4">Pesanan Berhasil Dibuat!</h1>
           <p className="section-subtitle">
-            Terima kasih, {form.nama}. Pesananmu sedang kami siapkan.
+            Terima kasih, {form.surename}. Pesananmu sedang kami siapkan.
           </p>
           <Link href="/menu" className="btn-primary mt-6 inline-flex">
             Pesan Lagi
@@ -118,9 +154,11 @@ export default function CheckoutPage() {
               </label>
               <input
                 type="text"
-                name="nama"
-                value={form.nama}
-                onChange={handleChange}
+                name="surename"
+                value={form.surename}
+                onChange={(e) => {
+                  setForm({ ...form, surename: e.target.value });
+                }}
                 placeholder="cth. Budi Santoso"
                 className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary-100"
               />
@@ -133,14 +171,15 @@ export default function CheckoutPage() {
               <div className="flex gap-3">
                 {[
                   { id: "dine-in", label: "Makan di Tempat" },
-                  { id: "delivery", label: "Antar ke Alamat" },
+                  // { id: "delivery", label: "Antar ke Alamat" },
                 ].map((opt) => (
                   <button
                     type="button"
                     key={opt.id}
-                    onClick={() => setForm({ ...form, tipe: opt.id })}
+                    value={opt.label}
+                    onClick={(e) => setForm({ ...form, ordertype: e.target.value })}
                     className={`flex-1 rounded-xl border px-4 py-2.5 text-sm font-medium transition ${
-                      form.tipe === opt.id
+                      form.ordertype === opt.id
                         ? "border-primary bg-primary-50 text-primary"
                         : "border-gray-200 text-gray-600 hover:border-primary"
                     }`}
@@ -153,15 +192,17 @@ export default function CheckoutPage() {
 
             <div>
               <label className="mb-1.5 block text-sm font-medium text-gray-700">
-                {form.tipe === "dine-in" ? "Nomor Meja" : "Alamat Pengantaran"}
+                {form.ordertype === "dine-in" ? "Nomor Meja" : "Alamat Pengantaran"}
               </label>
               <input
                 type="text"
                 name="lokasi"
-                value={form.lokasi}
-                onChange={handleChange}
+                value={form.table}
+                onChange={(e) => {
+                  setForm({ ...form, table: e.target.value });
+                }}
                 placeholder={
-                  form.tipe === "dine-in"
+                  form.ordertype === "dine-in"
                     ? "cth. Meja 12"
                     : "cth. Jl. Merdeka No. 10, Purwosari"
                 }
@@ -175,8 +216,11 @@ export default function CheckoutPage() {
               </label>
               <textarea
                 name="catatan"
-                value={form.catatan}
-                onChange={handleChange}
+                type="text"
+                value={form.notes}
+                onChange={(e) => {
+                  setForm({ ...form, notes: e.target.value });
+                }}
                 rows={3}
                 placeholder="cth. Tidak pedas, tanpa bawang"
                 className="w-full resize-none rounded-xl border border-gray-200 px-4 py-2.5 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary-100"
@@ -192,9 +236,10 @@ export default function CheckoutPage() {
                   <button
                     type="button"
                     key={pm.id}
-                    onClick={() => setForm({ ...form, pembayaran: pm.id })}
+                    value={pm.value}
+                    onClick={(e) => setForm({ ...form, methodpayment: e.target.value })}
                     className={`flex flex-col items-center gap-1.5 rounded-xl border px-4 py-3 text-xs font-medium transition ${
-                      form.pembayaran === pm.id
+                      form.methodpayment === pm.id
                         ? "border-primary bg-primary-50 text-primary"
                         : "border-gray-200 text-gray-600 hover:border-primary"
                     }`}
@@ -241,8 +286,12 @@ export default function CheckoutPage() {
               <span className="text-primary">{formatRupiah(grandTotal)}</span>
             </div>
 
-            <button type="submit" className="btn-primary mt-6 w-full">
-              Konfirmasi Pesanan
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="btn-primary mt-6 w-full disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {isSubmitting ? "Memproses Pesanan..." : "Konfirmasi Pesanan"}
             </button>
           </div>
         </form>

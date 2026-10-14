@@ -3,6 +3,9 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useCart } from "@/context/CartContext";
+import { Button } from "react-bootstrap";
+import { removeCookie } from "@/utils/cookies";
+import { useRouter } from "next/navigation";
 
 const menuLinks = [
   { href: "/", label: "Home" },
@@ -14,7 +17,21 @@ const menuLinks = [
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
-  const { totalItems } = useCart();
+  const { totalItems, isLogin, logoutUser } = useCart();
+
+  const router = useRouter()
+  const logout = () => {
+    alert("berhasil logout!")
+    removeCookie("userData");
+    logoutUser();
+    router.refresh();
+  };
+
+
+
+  const login = () => {
+    router.push("/login");
+  };
 
   return (
     <header className="sticky top-0 z-50 border-b border-gray-100 bg-white/90 backdrop-blur">
@@ -40,6 +57,17 @@ export default function Navbar() {
             </li>
           ))}
         </ul>
+
+          {/* button login dan logout */}
+          {isLogin ? (
+          <Button onClick={logout} className="btn-sm btn-danger">
+            Logout
+          </Button>
+        ) : (
+          <Button onClick={login} className="btn-sm btn-primary">
+            Login
+          </Button>
+        )}
 
         <div className="flex items-center gap-3">
           {/* Ikon Keranjang */}
